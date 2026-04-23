@@ -170,7 +170,7 @@ export default function SellerSettingsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-foreground">Available Balance</p>
-                    <p className="text-2xl font-bold text-foreground">$2,450.00</p>
+                    <p className="text-2xl font-bold text-foreground">Rp 2.450,00</p>
                   </div>
                   <Button>Withdraw</Button>
                 </div>

@@ -130,7 +130,7 @@ export default function CheckoutPage() {
                             {item.product.title}
                           </span>
                           <span className="text-foreground font-medium">
-                            ${item.product.price}
+                            Rp {item.product.price.toLocaleString('id-ID')}
                           </span>
                         </div>
                       ))}
@@ -141,11 +141,11 @@ export default function CheckoutPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Subtotal</span>
-                        <span className="text-foreground">${subtotal.toFixed(2)}</span>
+                        <span className="text-foreground">Rp {subtotal.toLocaleString('id-ID')}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Platform Fee</span>
-                        <span className="text-foreground">${platformFee.toFixed(2)}</span>
+                        <span className="text-foreground">Rp {platformFee.toLocaleString('id-ID')}</span>
                       </div>
                     </div>
                     
@@ -153,7 +153,7 @@ export default function CheckoutPage() {
                     
                     <div className="flex justify-between">
                       <span className="font-medium text-foreground">Total</span>
-                      <span className="text-xl font-bold text-foreground">${total.toFixed(2)}</span>
+                      <span className="text-xl font-bold text-foreground">Rp {total.toLocaleString('id-ID')}</span>
                     </div>
                   </CardContent>
                   <CardFooter className="flex flex-col gap-4">
@@ -168,7 +168,7 @@ export default function CheckoutPage() {
                       ) : (
                         <>
                           <Lock className="mr-2 h-4 w-4" />
-                          Pay ${total.toFixed(2)}
+                          Pay Rp {total.toLocaleString('id-ID')}
                         </>
                       )}
                     </Button>

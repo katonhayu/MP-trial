@@ -99,9 +99,9 @@ export default function AddProductPage() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="price">Price (USD)</Label>
+                    <Label htmlFor="price">Price (Rp)</Label>
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                       <span className="absolute left-3 inset-y-0 flex items-center text-muted-foreground">Rp</span>
                       <Input
                         id="price"
                         type="number"
@@ -197,7 +197,7 @@ export default function AddProductPage() {
                     {formData.description || 'Product description will appear here...'}
                   </p>
                   <p className="mt-3 text-2xl font-bold text-foreground">
-                    ${formData.price || '0'}
+                      Rp {formData.price ? Number(formData.price).toLocaleString('id-ID') : '0'}
                   </p>
                 </div>
               </CardContent>

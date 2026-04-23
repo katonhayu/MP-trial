@@ -78,7 +78,7 @@ export default function CartPage() {
                               </p>
                             </div>
                             <p className="text-lg font-semibold text-foreground">
-                              ${item.product.price}
+                              Rp {item.product.price.toLocaleString('id-ID')}
                             </p>
                           </div>
                           <div className="mt-auto flex items-center justify-between pt-4">
@@ -111,16 +111,16 @@ export default function CartPage() {
                   <CardContent className="space-y-4">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span className="text-foreground">${subtotal.toFixed(2)}</span>
+                      <span className="text-foreground">Rp {subtotal.toLocaleString('id-ID')}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Platform Fee (5%)</span>
-                      <span className="text-foreground">${platformFee.toFixed(2)}</span>
+                      <span className="text-foreground">Rp {platformFee.toLocaleString('id-ID')}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between">
                       <span className="font-medium text-foreground">Total</span>
-                      <span className="text-xl font-bold text-foreground">${total.toFixed(2)}</span>
+                      <span className="text-xl font-bold text-foreground">Rp {total.toLocaleString('id-ID')}</span>
                     </div>
                   </CardContent>
                   <CardFooter className="flex flex-col gap-3">

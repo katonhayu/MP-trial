@@ -23,7 +23,7 @@ export default function SellerDashboardPage() {
   const stats = [
     {
       title: 'Total Revenue',
-      value: `$${mockAnalytics.totalRevenue.toLocaleString()}`,
+      value: `Rp ${mockAnalytics.totalRevenue.toLocaleString('id-ID')}`,
       change: '+12.5%',
       icon: DollarSign,
     },
@@ -41,7 +41,7 @@ export default function SellerDashboardPage() {
     },
     {
       title: 'Avg. Order Value',
-      value: `$${mockAnalytics.averageOrderValue.toFixed(2)}`,
+      value: `Rp ${mockAnalytics.averageOrderValue.toLocaleString('id-ID')}`,
       change: '+5.1%',
       icon: TrendingUp,
     },
@@ -95,7 +95,7 @@ export default function SellerDashboardPage() {
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={mockAnalytics.revenueByMonth}>
+                <AreaChart data={mockAnalytics.revenueByMonth} margin={{ left: 50, right: 20, top: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -111,7 +111,7 @@ export default function SellerDashboardPage() {
                   <YAxis
                     className="text-xs"
                     tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `Rp\u00A0${Number(value).toLocaleString('id-ID')}`}
                   />
                   <Tooltip
                     contentStyle={{
@@ -120,7 +120,7 @@ export default function SellerDashboardPage() {
                       borderRadius: '8px',
                     }}
                     labelStyle={{ color: 'hsl(var(--foreground))' }}
-                    formatter={(value: number) => [`$${value}`, 'Revenue']}
+                    formatter={(value: number) => [`Rp\u00A0${Number(value).toLocaleString('id-ID')}`, 'Revenue']}
                   />
                   <Area
                     type="monotone"
@@ -151,7 +151,7 @@ export default function SellerDashboardPage() {
                     <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-foreground">${order.total}</p>
+                    <p className="text-sm font-medium text-foreground">Rp {order.total.toLocaleString('id-ID')}</p>
                     <Badge
                       variant={order.status === 'completed' ? 'default' : 'secondary'}
                       className={order.status === 'completed' ? 'bg-success text-success-foreground' : ''}
@@ -203,7 +203,7 @@ export default function SellerDashboardPage() {
                     {product.downloadCount.toLocaleString()} downloads
                   </p>
                 </div>
-                <p className="font-semibold text-foreground">${product.price}</p>
+                <p className="font-semibold text-foreground">Rp {product.price.toLocaleString('id-ID')}</p>
               </div>
             ))}
           </div>

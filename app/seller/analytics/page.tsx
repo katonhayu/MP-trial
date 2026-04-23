@@ -32,7 +32,7 @@ export default function SellerAnalyticsPage() {
   const stats = [
     {
       title: 'Total Revenue',
-      value: `$${mockAnalytics.totalRevenue.toLocaleString()}`,
+      value: `Rp ${mockAnalytics.totalRevenue.toLocaleString('id-ID')}`,
       change: '+12.5%',
       trend: 'up',
       icon: DollarSign,
@@ -123,7 +123,7 @@ export default function SellerAnalyticsPage() {
                   <YAxis
                     className="text-xs"
                     tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `Rp ${value.toLocaleString('id-ID')}`}
                   />
                   <Tooltip
                     contentStyle={{
@@ -132,7 +132,7 @@ export default function SellerAnalyticsPage() {
                       borderRadius: '8px',
                     }}
                     labelStyle={{ color: 'hsl(var(--foreground))' }}
-                    formatter={(value: number) => [`$${value}`, 'Revenue']}
+                    formatter={(value: number) => [`Rp ${value.toLocaleString('id-ID')}`, 'Revenue']}
                   />
                   <Area
                     type="monotone"
@@ -178,7 +178,7 @@ export default function SellerAnalyticsPage() {
                       borderRadius: '8px',
                     }}
                     labelStyle={{ color: 'hsl(var(--foreground))' }}
-                    formatter={(value: number) => [value.toLocaleString(), 'Sales']}
+                    formatter={(value: number) => [`Rp ${value.toLocaleString('id-ID')}`, 'Sales']}
                   />
                   <Bar dataKey="sales" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
                 </BarChart>

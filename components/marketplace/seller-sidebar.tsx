@@ -30,7 +30,7 @@ export function SellerSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r border-border bg-card">
+    <aside className="sticky top-0 h-screen w-64 flex flex-col border-r border-border bg-card">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b border-border px-6">
         <Link href="/" className="flex items-center gap-2">
@@ -64,7 +64,7 @@ export function SellerSidebar() {
       </nav>
 
       {/* User Section */}
-      <div className="border-t border-border p-4">
+      <div className="mt-auto border-t border-border p-4">
         <div className="flex items-center gap-3">
           <Avatar>
             <AvatarFallback className="bg-primary/10 text-primary">

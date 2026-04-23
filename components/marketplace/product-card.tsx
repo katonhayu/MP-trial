@@ -57,7 +57,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         </p>
       </CardContent>
       <CardFooter className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-3">
-        <span className="text-lg font-bold text-foreground">${product.price}</span>
+        <span className="text-lg font-bold text-foreground">Rp {product.price.toLocaleString('id-ID')}</span>
         <Button
           size="sm"
           onClick={(e) => {

@@ -12,6 +12,7 @@ import { Header } from '@/components/marketplace/header'
 import { Footer } from '@/components/marketplace/footer'
 import { ProductCard } from '@/components/marketplace/product-card'
 import { mockProducts, categories } from '@/lib/mock-data'
+import ProductDataGrid from '@/components/marketplace/product-data-grid'
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -66,7 +67,7 @@ export default function ProductsPage() {
       <div>
         <h3 className="mb-3 font-medium text-foreground">Price Range</h3>
         <div className="space-y-2">
-          {['Under $25', '$25 - $50', '$50 - $100', 'Over $100'].map((range) => (
+          {['Under Rp250.000', 'Rp250.000 - Rp500.000', 'Rp500.000 - Rp1.000.000', 'Over Rp1.000.000'].map((range) => (
             <div key={range} className="flex items-center gap-2">
               <Checkbox
                 id={range}
@@ -190,15 +191,15 @@ export default function ProductsPage() {
             {/* Products Grid */}
             <div className="flex-1">
               {sortedProducts.length > 0 ? (
-                <div className={`grid gap-6 ${
-                  viewMode === 'grid'
-                    ? 'sm:grid-cols-2 xl:grid-cols-3'
-                    : 'grid-cols-1'
-                }`}>
-                  {sortedProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
+                viewMode === 'grid' ? (
+                  <div className={`grid gap-6 sm:grid-cols-2 xl:grid-cols-3`}>
+                    {sortedProducts.map((product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                ) : (
+                  <ProductDataGrid products={sortedProducts} />
+                )
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                   <p className="text-lg font-medium text-foreground">No products found</p>

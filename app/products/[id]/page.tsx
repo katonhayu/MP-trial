@@ -74,7 +74,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </p>
 
               <div className="mt-8">
-                <p className="text-4xl font-bold text-foreground">${product.price}</p>
+                <p className="text-4xl font-bold text-foreground">Rp {product.price.toLocaleString('id-ID')}</p>
                 <p className="mt-1 text-sm text-muted-foreground">One-time purchase, lifetime access</p>
               </div>
 

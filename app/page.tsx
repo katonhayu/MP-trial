@@ -66,7 +66,7 @@ export default function HomePage() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                     <TrendingUp className="h-6 w-6 text-primary" />
                   </div>
-                  <p className="mt-4 text-3xl font-bold text-foreground">$2M+</p>
+                  <p className="mt-4 text-3xl font-bold text-foreground">Rp 30M+</p>
                   <p className="text-sm text-muted-foreground">Paid to Creators</p>
                 </CardContent>
               </Card>
