@@ -3,16 +3,16 @@ import { Store } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-card">
+    <footer className="border-t border-border bg-secondary/30">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary shadow-sm">
                 <Store className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="text-lg font-semibold text-foreground">MarketHub</span>
+              <span className="text-lg font-bold text-foreground">MarketHub</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
               The premier marketplace for digital products. Buy and sell templates, courses, ebooks, and more.

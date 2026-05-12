@@ -12,11 +12,11 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   return (
-    <Card className="group overflow-hidden transition-all hover:shadow-lg hover:border-primary/20">
+    <Card className="group overflow-hidden border-border bg-card shadow-sm transition-all hover:shadow-lg hover:border-primary/30">
       <Link href={`/products/${product.id}`}>
-        <div className="aspect-[4/3] overflow-hidden bg-muted">
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-            <span className="text-4xl font-semibold text-primary/30">
+        <div className="aspect-[4/3] overflow-hidden bg-secondary">
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/5 to-accent/10">
+            <span className="text-5xl font-bold text-primary/20 group-hover:text-primary/30 transition-colors">
               {product.title.charAt(0)}
             </span>
           </div>
@@ -56,10 +56,11 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           by <span className="text-foreground">{product.sellerName}</span>
         </p>
       </CardContent>
-      <CardFooter className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-3">
+      <CardFooter className="flex items-center justify-between border-t border-border bg-secondary/50 px-4 py-3">
         <span className="text-lg font-bold text-foreground">Rp {product.price.toLocaleString('id-ID')}</span>
         <Button
           size="sm"
+          className="shadow-sm"
           onClick={(e) => {
             e.preventDefault()
             onAddToCart?.(product)
