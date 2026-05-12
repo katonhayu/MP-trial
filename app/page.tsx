@@ -21,7 +21,7 @@ export default function HomePage() {
         {/* Hero Section */}
         <section className="relative overflow-hidden border-b border-border bg-card">
           {/* Grid Pattern Background */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)] bg-[size:64px_64px] opacity-50" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#cbd5e1_2px,transparent_2px),linear-gradient(to_bottom,#cbd5e1_2px,transparent_2px)] dark:bg-[linear-gradient(to_right,#404040_2px,transparent_2px),linear-gradient(to_bottom,#404040_2px,transparent_2px)] bg-[size:48px_48px] opacity-60" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
           
           <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
