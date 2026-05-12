@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Star, Download, ShoppingCart } from 'lucide-react'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,12 +15,14 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   return (
     <Card className="group overflow-hidden border-border bg-card shadow-sm transition-all hover:shadow-lg hover:border-primary/30">
       <Link href={`/products/${product.id}`}>
-        <div className="aspect-[4/3] overflow-hidden bg-secondary">
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/5 to-accent/10">
-            <span className="text-5xl font-bold text-primary/20 group-hover:text-primary/30 transition-colors">
-              {product.title.charAt(0)}
-            </span>
-          </div>
+        <div className="aspect-[4/3] overflow-hidden bg-secondary relative">
+          <Image
+            src={product.imageUrl}
+            alt={product.title}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
         </div>
       </Link>
       <CardContent className="p-4">
