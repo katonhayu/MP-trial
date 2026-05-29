@@ -10,23 +10,85 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { supabase } from '@/src/lib/supabase'
+import { toast } from 'sonner'
 
 export default function RegisterPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [accountType, setAccountType] = useState<'buyer' | 'seller'>('buyer')
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     
-    // Simulate registration
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    
-    if (accountType === 'seller') {
-      router.push('/seller/dashboard')
-    } else {
-      router.push('/products')
+    try {
+      // 1. Signup ke Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          }
+        }
+      })
+
+      if (authError) {
+        toast.error(authError.message)
+        return
+      }
+
+      const user = authData.user
+      if (!user) {
+        toast.info('Silakan cek email Anda untuk konfirmasi akun.')
+        return
+      }
+
+      // 2. Ambil Role ID dari tabel roles
+      const { data: roleData, error: roleError } = await supabase
+        .from('roles')
+        .select('id')
+        .ilike('name', accountType)
+        .single()
+
+      if (roleError || !roleData) {
+        console.error('Error fetching role:', roleError)
+        toast.error('Gagal mendapatkan informasi role.')
+        return
+      }
+
+      // 3. Simpan data tambahan ke tabel users
+      const { error: userError } = await supabase
+        .from('users')
+        .insert({
+          id: user.id,
+          name: name,
+          email: email,
+          role_id: roleData.id
+        })
+
+      if (userError) {
+        console.error('Error saving user data:', userError)
+        toast.error('Gagal menyimpan profil pengguna.')
+        return
+      }
+
+      toast.success('Registrasi berhasil!')
+      
+      if (accountType === 'seller') {
+        router.push('/seller/dashboard')
+      } else {
+        router.push('/products')
+      }
+    } catch (err: any) {
+      toast.error('Terjadi kesalahan yang tidak terduga.')
+      console.error(err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -65,6 +127,8 @@ export default function RegisterPage() {
                     type="text"
                     placeholder="John Doe"
                     className="pl-10"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
                   />
                 </div>
@@ -78,6 +142,8 @@ export default function RegisterPage() {
                     type="email"
                     placeholder="you@example.com"
                     className="pl-10"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -91,6 +157,8 @@ export default function RegisterPage() {
                     type="password"
                     placeholder="Create a strong password"
                     className="pl-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>

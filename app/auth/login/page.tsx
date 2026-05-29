@@ -9,19 +9,70 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { supabase } from '@/src/lib/supabase'
+import { toast } from 'sonner'
 
 export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     
-    // Simulate login
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    
-    router.push('/customer/purchases')
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (authError) {
+        toast.error(authError.message)
+        return
+      }
+
+      const user = authData.user
+      if (!user) return
+
+      // Fetch user role from database
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select(`
+          role_id,
+          roles (
+            name
+          )
+        `)
+        .eq('id', user.id)
+        .single()
+
+      if (userError || !userData) {
+        console.error('Error fetching user data:', userError)
+        toast.error('Gagal mengambil data role pengguna.')
+        return
+      }
+
+      // @ts-ignore - Handle dynamic join structure
+      const roleName = userData.roles?.name?.toLowerCase()
+
+      toast.success('Login successful!')
+      
+      if (roleName === 'seller') {
+        router.push('/seller/dashboard')
+      } else if (roleName === 'buyer') {
+        router.push('/products')
+      } else {
+        // Fallback default redirect
+        router.push('/customer/purchases')
+      }
+    } catch (err: any) {
+      toast.error('Terjadi kesalahan yang tidak terduga.')
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -51,6 +102,8 @@ export default function LoginPage() {
                     type="email"
                     placeholder="you@example.com"
                     className="pl-10"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -72,6 +125,8 @@ export default function LoginPage() {
                     type="password"
                     placeholder="Enter your password"
                     className="pl-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
