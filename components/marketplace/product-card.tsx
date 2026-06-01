@@ -49,7 +49,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </div>
           <div className="flex items-center gap-1">
             <Download className="h-4 w-4" />
-            <span>{product.downloadCount.toLocaleString()}</span>
+            <span>{product.downloadCount.toLocaleString('id-ID')}</span>
           </div>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">

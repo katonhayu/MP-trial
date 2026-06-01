@@ -65,7 +65,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 </div>
                 <div className="flex items-center gap-1 text-muted-foreground">
                   <Download className="h-4 w-4" />
-                  <span>{product.downloadCount.toLocaleString()} downloads</span>
+                  <span>{product.downloadCount.toLocaleString('id-ID')} downloads</span>
                 </div>
               </div>
 
@@ -194,7 +194,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             </div>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            {new Date(review.createdAt).toLocaleDateString()}
+                            {new Date(review.createdAt).toLocaleDateString('id-ID')}
                           </p>
                         </div>
                         <p className="mt-4 text-muted-foreground">{review.comment}</p>

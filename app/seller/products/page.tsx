@@ -99,11 +99,11 @@ export default function SellerProductsPage() {
                   <TableCell>
                     <Badge variant="secondary">{product.category}</Badge>
                   </TableCell>
-                  <TableCell className="font-medium">${product.price}</TableCell>
+                  <TableCell className="font-medium">Rp {product.price.toLocaleString('id-ID')}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Download className="h-4 w-4" />
-                      {product.downloadCount.toLocaleString()}
+                      {product.downloadCount.toLocaleString('id-ID')}
                     </div>
                   </TableCell>
                   <TableCell>

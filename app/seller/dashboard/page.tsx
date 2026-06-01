@@ -200,7 +200,7 @@ export default function SellerDashboardPage() {
                 <div className="flex-1">
                   <p className="font-medium text-foreground">{product.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {product.downloadCount.toLocaleString()} downloads
+                    {product.downloadCount.toLocaleString('id-ID')} downloads
                   </p>
                 </div>
                 <p className="font-semibold text-foreground">Rp {product.price.toLocaleString('id-ID')}</p>
