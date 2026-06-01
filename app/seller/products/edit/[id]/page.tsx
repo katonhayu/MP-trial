@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, use } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Upload, X, FileText, Image as ImageIcon } from 'lucide-react'
@@ -13,9 +13,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/src/lib/supabase'
 import { toast } from 'sonner'
 
-export default function AddProductPage() {
+export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [categories, setCategories] = useState<any[]>([])
   const [loadingCats, setLoadingCats] = useState(true)
 
@@ -30,11 +32,14 @@ export default function AddProductPage() {
   const [productFile, setProductFile] = useState<File | null>(null)
   const [coverImage, setCoverImage] = useState<File | null>(null)
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
+  const [existingImage, setExistingImage] = useState<string | null>(null)
+  const [existingFile, setExistingFile] = useState<string | null>(null)
 
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
 
+  // Load Categories & Product Info
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -51,8 +56,42 @@ export default function AddProductPage() {
         setLoadingCats(false)
       }
     }
+
+    const loadProduct = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', id)
+          .single()
+
+        if (error) throw error
+
+        if (data) {
+          setFormData({
+            title: data.title || '',
+            description: data.description || '',
+            price: data.price ? data.price.toString() : '',
+            category: data.category_id || '',
+          })
+          setExistingImage(data.image_path)
+          setExistingFile(data.file_path)
+          if (data.image_path) {
+            setImagePreviewUrl(data.image_path)
+          }
+        }
+      } catch (err: any) {
+        console.error('Error loading product:', err)
+        toast.error('Gagal mengambil detail produk: ' + err.message)
+        router.push('/seller/products')
+      } finally {
+        setLoading(false)
+      }
+    }
+
     loadCategories()
-  }, [])
+    loadProduct()
+  }, [id, router])
 
   const handleProductFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -64,8 +103,8 @@ export default function AddProductPage() {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0]
       setCoverImage(file)
-      // Cleanup previous preview url if exists
-      if (imagePreviewUrl) {
+      // Cleanup blob url if we created one (don't revoke if it's external existingImage URL)
+      if (imagePreviewUrl && imagePreviewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(imagePreviewUrl)
       }
       setImagePreviewUrl(URL.createObjectURL(file))
@@ -79,10 +118,10 @@ export default function AddProductPage() {
 
   const handleRemoveCoverImage = () => {
     setCoverImage(null)
-    if (imagePreviewUrl) {
+    if (imagePreviewUrl && imagePreviewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(imagePreviewUrl)
     }
-    setImagePreviewUrl(null)
+    setImagePreviewUrl(existingImage || null)
     if (imageInputRef.current) imageInputRef.current.value = ''
   }
 
@@ -95,24 +134,10 @@ export default function AddProductPage() {
 
     setIsSubmitting(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      let sellerId = user?.id
+      let image_path = existingImage
+      let file_path = existingFile
 
-      if (!sellerId) {
-        const { data: usersList } = await supabase.from('users').select('id').limit(1)
-        if (usersList && usersList.length > 0) {
-          sellerId = usersList[0].id
-        } else {
-          toast.error('Silakan login atau daftar seller terlebih dahulu!')
-          setIsSubmitting(false)
-          return
-        }
-      }
-
-      let image_path = '/placeholder-product.jpg'
-      let file_path = '/placeholder-file.zip'
-
-      // 1. Attempt uploading image to Supabase Storage
+      // 1. Upload new image if chosen
       if (coverImage) {
         try {
           const fileExt = coverImage.name.split('.').pop()
@@ -128,12 +153,14 @@ export default function AddProductPage() {
             .getPublicUrl(`images/${fileName}`)
           image_path = publicUrl
         } catch (err: any) {
-          console.warn('Storage image upload error, using local/placeholder fallback:', err)
-          image_path = imagePreviewUrl || '/placeholder-product.jpg'
+          console.warn('Storage image upload error, using local preview:', err)
+          if (imagePreviewUrl && imagePreviewUrl.startsWith('blob:')) {
+            image_path = imagePreviewUrl
+          }
         }
       }
 
-      // 2. Attempt uploading file to Supabase Storage
+      // 2. Upload new file if chosen
       if (productFile) {
         try {
           const fileExt = productFile.name.split('.').pop()
@@ -149,32 +176,40 @@ export default function AddProductPage() {
             .getPublicUrl(`files/${fileName}`)
           file_path = publicUrl
         } catch (err: any) {
-          console.warn('Storage file upload error, using placeholder fallback:', err)
-          file_path = '/placeholder-file.zip'
+          console.warn('Storage file upload error, fallback to placeholder:', err)
         }
       }
 
-      const { error } = await supabase.from('products').insert({
-        title: formData.title,
-        description: formData.description,
-        price: parseFloat(formData.price),
-        category_id: formData.category,
-        seller_id: sellerId,
-        image_path: image_path,
-        file_path: file_path,
-        is_active: true,
-      })
+      const { error } = await supabase
+        .from('products')
+        .update({
+          title: formData.title,
+          description: formData.description,
+          price: parseFloat(formData.price),
+          category_id: formData.category,
+          image_path: image_path,
+          file_path: file_path,
+        })
+        .eq('id', id)
 
       if (error) throw error
 
-      toast.success('Produk berhasil dipublikasikan!')
+      toast.success('Produk berhasil diperbarui!')
       router.push('/seller/products')
     } catch (err: any) {
-      console.error('Error creating product:', err)
-      toast.error('Gagal menambahkan produk: ' + err.message)
+      console.error('Error updating product:', err)
+      toast.error('Gagal memperbarui produk: ' + err.message)
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-muted/30">
+        <p className="text-muted-foreground">Memuat data produk...</p>
+      </div>
+    )
   }
 
   return (
@@ -188,8 +223,8 @@ export default function AddProductPage() {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Products
         </Link>
-        <h1 className="mt-4 text-2xl font-bold text-foreground">Add New Product</h1>
-        <p className="text-muted-foreground">Create a new digital product listing</p>
+        <h1 className="mt-4 text-2xl font-bold text-foreground">Edit Product</h1>
+        <p className="text-muted-foreground">Update your digital product listing</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -200,7 +235,7 @@ export default function AddProductPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Basic Information</CardTitle>
-                <CardDescription>Add details about your product</CardDescription>
+                <CardDescription>Update details about your product</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -286,7 +321,7 @@ export default function AddProductPage() {
                       <div>
                         <p className="font-medium text-foreground line-clamp-1">{productFile.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {(productFile.size / (1024 * 1024)).toFixed(2)} MB
+                          {(productFile.size / (1024 * 1024)).toFixed(2)} MB (New selection)
                         </p>
                       </div>
                     </div>
@@ -298,6 +333,26 @@ export default function AddProductPage() {
                       onClick={handleRemoveProductFile}
                     >
                       <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : existingFile ? (
+                  <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 p-4">
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-8 w-8 text-primary" />
+                      <div>
+                        <p className="font-medium text-foreground line-clamp-1">
+                          {existingFile.split('/').pop() || 'Product File'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Existing file attached</p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Change File
                     </Button>
                   </div>
                 ) : (
@@ -345,23 +400,31 @@ export default function AddProductPage() {
                   accept="image/*"
                   className="hidden"
                 />
-                {coverImage ? (
+                {imagePreviewUrl ? (
                   <div className="relative rounded-lg border border-border overflow-hidden bg-muted/30">
                     <img
-                      src={imagePreviewUrl || ''}
+                      src={imagePreviewUrl}
                       alt="Cover Preview"
                       className="aspect-[16/9] w-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                       <Button
                         type="button"
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleRemoveCoverImage}
+                        variant="outline"
+                        className="mr-2 bg-background hover:bg-background/90"
+                        onClick={() => imageInputRef.current?.click()}
                       >
-                        <X className="mr-2 h-4 w-4" />
-                        Remove Image
+                        Change Image
                       </Button>
+                      {coverImage && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={handleRemoveCoverImage}
+                        >
+                          Revert
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -428,7 +491,7 @@ export default function AddProductPage() {
                     {formData.title || 'Product Title'}
                   </h3>
                   <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                    {formData.description || 'Product description will appear here...'}
+                    {formData.description || 'Product description...'}
                   </p>
                   <p className="mt-3 text-2xl font-bold text-foreground">
                     Rp {formData.price ? Number(formData.price).toLocaleString('id-ID') : '0'}
@@ -441,11 +504,13 @@ export default function AddProductPage() {
             <Card>
               <CardContent className="p-4 space-y-3">
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? 'Publishing...' : 'Publish Product'}
+                  {isSubmitting ? 'Saving Changes...' : 'Save Changes'}
                 </Button>
-                <Button type="button" variant="outline" className="w-full">
-                  Save as Draft
-                </Button>
+                <Link href="/seller/products" className="block w-full">
+                  <Button type="button" variant="outline" className="w-full">
+                    Cancel
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>
