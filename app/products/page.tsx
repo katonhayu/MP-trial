@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
+import { Card, CardContent } from '@/components/ui/card'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Header } from '@/components/marketplace/header'
 import { Footer } from '@/components/marketplace/footer'
@@ -127,12 +128,12 @@ export default function ProductsPage() {
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-background shadow-sm"
               />
             </div>
             <div className="flex items-center gap-3">
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[160px]">
+                <SelectTrigger className="w-[160px] bg-background shadow-sm">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
@@ -144,7 +145,7 @@ export default function ProductsPage() {
                 </SelectContent>
               </Select>
 
-              <div className="hidden items-center gap-1 rounded-lg border border-border p-1 sm:flex">
+              <div className="hidden items-center gap-1 rounded-lg border border-border bg-background p-1 shadow-sm sm:flex">
                 <Button
                   variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                   size="icon"
@@ -185,7 +186,11 @@ export default function ProductsPage() {
           <div className="flex gap-8">
             {/* Desktop Sidebar */}
             <aside className="hidden w-64 shrink-0 lg:block">
-              <FilterSidebar />
+              <Card className="sticky top-24 border-border/50 bg-card/50 backdrop-blur">
+                <CardContent className="p-6">
+                  <FilterSidebar />
+                </CardContent>
+              </Card>
             </aside>
 
             {/* Products Grid */}

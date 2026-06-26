@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { Trash2, ShoppingBag, ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -8,26 +7,18 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator'
 import { Header } from '@/components/marketplace/header'
 import { Footer } from '@/components/marketplace/footer'
-import { mockProducts } from '@/lib/mock-data'
-import type { CartItem } from '@/lib/types'
+import { useCart } from '@/components/marketplace/cart-context'
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    { product: mockProducts[0], quantity: 1 },
-    { product: mockProducts[1], quantity: 1 },
-  ])
+  const { cartItems, removeFromCart, cartTotal } = useCart()
 
-  const removeItem = (productId: string) => {
-    setCartItems(cartItems.filter((item) => item.product.id !== productId))
-  }
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+  const subtotal = cartTotal
   const platformFee = subtotal * 0.05
   const total = subtotal + platformFee
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header cartItemCount={cartItems.length} />
+      <Header />
 
       <main className="flex-1">
         <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
@@ -55,12 +46,15 @@ export default function CartPage() {
                     <CardContent className="p-4">
                       <div className="flex gap-4">
                         {/* Product Image */}
-                        <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
-                          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-                            <span className="text-2xl font-semibold text-primary/30">
-                              {item.product.title.charAt(0)}
-                            </span>
-                          </div>
+                        <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-muted relative">
+                          <img
+                            src={item.product.imageUrl || "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&q=80"}
+                            alt={item.product.title}
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80";
+                            }}
+                          />
                         </div>
 
                         {/* Product Info */}
@@ -89,7 +83,7 @@ export default function CartPage() {
                               variant="ghost"
                               size="sm"
                               className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => removeItem(item.product.id)}
+                              onClick={() => removeFromCart(item.product.id)}
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Remove

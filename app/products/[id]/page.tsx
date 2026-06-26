@@ -13,9 +13,12 @@ import { Header } from '@/components/marketplace/header'
 import { Footer } from '@/components/marketplace/footer'
 import { ProductCard } from '@/components/marketplace/product-card'
 import { mockProducts, mockReviews } from '@/lib/mock-data'
+import { useCart } from '@/components/marketplace/cart-context'
+import { toast } from 'sonner'
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
+  const { addToCart } = useCart()
   const product = mockProducts.find((p) => p.id === id) || mockProducts[0]
   const relatedProducts = mockProducts.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 3)
   const productReviews = mockReviews.filter((r) => r.productId === product.id)
@@ -39,12 +42,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
           <div className="grid gap-8 lg:grid-cols-2">
             {/* Product Image */}
-            <div className="aspect-square overflow-hidden rounded-2xl bg-muted">
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-                <span className="text-8xl font-bold text-primary/20">
-                  {product.title.charAt(0)}
-                </span>
-              </div>
+            <div className="aspect-square overflow-hidden rounded-2xl bg-muted relative">
+              <img
+                src={product.imageUrl || "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&q=80"}
+                alt={product.title}
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80";
+                }}
+              />
             </div>
 
             {/* Product Info */}
@@ -79,12 +85,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
 
               <div className="mt-8 flex gap-3">
-                <Link href="/cart" className="flex-1">
-                  <Button size="lg" className="w-full">
-                    <ShoppingCart className="mr-2 h-5 w-5" />
-                    Add to Cart
-                  </Button>
-                </Link>
+                <Button 
+                  size="lg" 
+                  className="flex-1"
+                  onClick={() => {
+                    addToCart(product)
+                    toast.success(`${product.title} added to cart`)
+                  }}
+                >
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Add to Cart
+                </Button>
                 <Button size="lg" variant="outline">
                   <Heart className="h-5 w-5" />
                 </Button>

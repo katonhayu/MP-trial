@@ -1,9 +1,13 @@
+'use client'
+
 import Link from 'next/link'
 import { Star, Download, ShoppingCart } from 'lucide-react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/lib/types'
+import { useCart } from '@/components/marketplace/cart-context'
 
 interface ProductCardProps {
   product: Product
@@ -11,15 +15,20 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const { addToCart } = useCart()
+
   return (
     <Card className="group overflow-hidden transition-all hover:shadow-lg hover:border-primary/20">
       <Link href={`/products/${product.id}`}>
-        <div className="aspect-[4/3] overflow-hidden bg-muted">
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-            <span className="text-4xl font-semibold text-primary/30">
-              {product.title.charAt(0)}
-            </span>
-          </div>
+        <div className="aspect-[4/3] overflow-hidden bg-muted relative">
+          <img
+            src={product.imageUrl || "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&q=80"}
+            alt={product.title}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80";
+            }}
+          />
         </div>
       </Link>
       <CardContent className="p-4">
@@ -62,7 +71,12 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           size="sm"
           onClick={(e) => {
             e.preventDefault()
-            onAddToCart?.(product)
+            if (onAddToCart) {
+              onAddToCart(product)
+            } else {
+              addToCart(product)
+              toast.success(`${product.title} added to cart`)
+            }
           }}
         >
           <ShoppingCart className="mr-2 h-4 w-4" />

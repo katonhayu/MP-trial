@@ -12,12 +12,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useCart } from '@/components/marketplace/cart-context'
 
-interface HeaderProps {
-  cartItemCount?: number
-}
-
-export function Header({ cartItemCount = 0 }: HeaderProps) {
+export function Header() {
+  const { cartCount } = useCart()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -58,9 +56,9 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
           <Link href="/cart" className="relative">
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
-              {cartItemCount > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
-                  {cartItemCount}
+                  {cartCount}
                 </span>
               )}
             </Button>
@@ -119,7 +117,7 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
             </Link>
             <Link href="/cart" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
-                Cart {cartItemCount > 0 && `(${cartItemCount})`}
+                Cart {cartCount > 0 && `(${cartCount})`}
               </Button>
             </Link>
             <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>

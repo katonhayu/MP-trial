@@ -9,9 +9,11 @@ import { Header } from '@/components/marketplace/header'
 import { Footer } from '@/components/marketplace/footer'
 import { ProductCard } from '@/components/marketplace/product-card'
 import { mockProducts } from '@/lib/mock-data'
+import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
   const featuredProducts = mockProducts.filter((p) => p.featured).slice(0, 3)
+  const router = useRouter()
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -99,7 +101,11 @@ export default function HomePage() {
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onAddToCart={() => router.push('/auth/login')}
+              />
             ))}
           </div>
         </section>
